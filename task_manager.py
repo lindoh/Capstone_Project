@@ -1,5 +1,5 @@
 #=========================== Importing Libraries ==============================
-
+import re
 
 #=========================== Function Definitions =============================
 
@@ -13,7 +13,7 @@ def process_user_file():
         user_file = file.read()
 
     # Split the user_file information into seperate username and password
-    user_file = user_file.split(',')
+    user_file = re.split(',|\n', user_file)
 
     # Declare a dictionary to hold the username, password combination from
     # the user_file file
@@ -74,45 +74,56 @@ while valid == False:
     # Ask the user for password
     password = input("Please enter password: ")
 
+    # If Login credentials are valid, display appropriate message and 
+    # set valid to True
     if validate_logins(username, password) == True:
         print("Login Successful!!\n")
         valid = True
 
-
+# If Login is successful, display the menu
 while valid:
     # Present the menu to the user and 
     # make sure that the user input is converted to lower case.
     menu = input('''Select one of the following options:
-r - register a user
-a - add task
-va - view all tasks
-vm - view my tasks
-e - exit
-: ''').lower()
+                    r - register a user
+                    a - add task
+                    va - view all tasks
+                    vm - view my tasks
+                    e - exit
+                    : ''').lower()
 
     if menu == 'r':
-        pass
-        '''This code block will add a new user to the user.txt file
-        - You can use the following steps:
-            - Request input of a new username
-            - Request input of a new password
-            - Request input of password confirmation.
-            - Check if the new password and confirmed password are the same
-            - If they are the same, add them to the user.txt file,
-              otherwise present a relevant message'''
+        # Request input of a new username
+        username = input("Please enter username: ")
+        # Request input of a new password
+        password = input("Please enter password: ")
+        # Request input of password confirmation.
+        confirm_password = input("Please confirm password: ")
+
+        # Check if the new password and confirmed password are the same
+        if (password != confirm_password):
+           print("ERROR!! Passwords do not match.. ") 
+        # Else if they are the same, add them to the user.txt file,
+        else:
+            with open('user.txt', 'a') as file:
+                file.write('\n' + username + ', ' + password)
 
     elif menu == 'a':
-        pass
-        '''This code block will allow a user to add a new task to task.txt file
-        - You can use these steps:
-            - Prompt a user for the following: 
-                - the username of the person whom the task is assigned to,
-                - the title of the task,
-                - the description of the task, and 
-                - the due date of the task.
-            - Then, get the current date.
-            - Add the data to the file task.txt
-            - Remember to include 'No' to indicate that the task is not complete.'''
+        # Ask the username of the person whom the task is assigned to,
+        assigned_user = input("Enter username for the user assigned to task: ")
+        # the title of the task,
+        title = input("Enter task title: ")
+        # the description of the task, and 
+        description = input("Enter task description: ")
+        # Then, get the current date.
+        start_date = input("Enter current date: ")
+        # the due date of the task.
+        due_date = input("Enter task due date: ")
+        
+        # Add the data to the file task.txt
+        with open('tasks.txt', 'a') as file:
+            file.write('\n'+ assigned_user + ', ' + title + ', ' + description\
+                       + ', ' + start_date + ', ' + due_date + ', ' + 'No')
 
     elif menu == 'va':
         pass
