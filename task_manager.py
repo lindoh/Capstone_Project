@@ -1,14 +1,85 @@
-#=====importing libraries===========
-'''This is the section where you will import libraries'''
+#=========================== Importing Libraries ==============================
 
+
+#=========================== Function Definitions =============================
+
+def process_user_file():
+    '''
+    This function opens the user.txt file and seperate the username and password.
+    Returns a dictionary with a key:value pair as username:password pair
+    '''
+     # Open a file for reading usernames and passwords
+    with open('user.txt', 'r') as file:
+        user_file = file.read()
+
+    # Split the user_file information into seperate username and password
+    user_file = user_file.split(',')
+
+    # Declare a dictionary to hold the username, password combination from
+    # the user_file file
+    login_details = {}
+
+    # Iterate through user_file and to save the username and password
+    for i in range(len(user_file)):
+        if (i % 2 == 0):
+            login_details[user_file[i]] = user_file[i + 1].strip()
+
+    # Return the Username:Password pairs
+    return login_details
+
+
+def validate_logins(username, password):
+    '''
+    validate_logins takes username and password and checks if they are valid.
+    The function returns a true for valid and false for invalid logins
+    '''
+    # Dictionary holds username, password combination from the user.txt file
+    #login_details = {}
+    login_details = process_user_file()
+
+    # Iterate through login_details to find a match for username and password 
+    username_found = False
+    password_valid = False
+
+    for user_name in login_details:
+        # Check if given username is found in our database
+        if (username == user_name):
+            # If found, check if corresponding password is correct and update flag
+            username_found = True
+
+            # If Password match is found return true
+            if login_details[user_name] == password:
+                password_valid = True
+                break    
+            else:
+                print("ERROR!! The supplied password is Invalid, please try again.\n")
+
+    # If all usernames have been check and no match is found, alert the user
+    if username_found == False:
+        print("ERROR!! The username does not exist")
+
+    # Return the result
+    return password_valid
+
+# =============================================================================
+# ============================= Main Program ==================================
+    
 #====Login Section====
-'''Here you will write code that will allow a user to login.
-    - Your code must read usernames and password from the user.txt file
-    - You can use a list or dictionary to store a list of usernames and passwords from the file
-    - Use a while loop to validate your user name and password
-'''
 
-while True:
+valid =  False
+
+while valid == False:
+    # Ask the user for username
+    username = input("Please enter username: ")
+    # Ask the user for password
+    password = input("Please enter password: ")
+
+    if validate_logins(username, password) == True:
+        print("Login Successful!!\n")
+        valid = True
+
+
+while valid:
     # Present the menu to the user and 
     # make sure that the user input is converted to lower case.
     menu = input('''Select one of the following options:
