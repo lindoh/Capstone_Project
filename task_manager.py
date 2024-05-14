@@ -1,4 +1,5 @@
 #=========================== Importing Libraries ==============================
+# Regex split module
 import re
 
 #=========================== Function Definitions =============================
@@ -61,13 +62,56 @@ def validate_logins(username, password):
     # Return the result
     return password_valid
 
+
+def print_task(assigned_user, title, description, start_date, \
+                           due_date, task_complete):
+    '''
+    Display information in a clear and easy to read manner
+    '''
+     # Print the results
+    print('Task:\t\t\t ' + title + '\n'+ 'Assigned to:\t\t ' + assigned_user+\
+          '\n'+ 'Date assigned:\t\t ' + start_date + '\n' + 'Due date:\t\t '+\
+          due_date + '\n' + 'Task complete:\t\t ' + task_complete + '\n' +\
+          'Task description:\t ' + description + '\n')
+
+
+def process_task_file(menu_option):
+    '''
+    This function reads a file, split and strip into seperate information
+    And print the resulting information based on the menu option chosen
+    '''
+    # Read a line from the file
+    with open('tasks.txt', 'r') as file:
+        for line in file:
+            # Convert the string line into a list for ease of manipulation
+            task = line.split(',')
+
+            # Assigned each text to the correct component
+            assigned_user = task[0].strip()
+            title = task[1].strip()
+            description = task[2].strip()
+            start_date = task[3].strip()
+            due_date = task[4].strip()
+            task_complete = task[5].strip()
+
+            # Print all tasks if menu option is 'va' else print the tasks for 
+            # logged in user
+            if (menu_option == 'va' or 
+               (menu_option == 'vm' and assigned_user == logged_in_user)):
+                print_task(assigned_user, title, description, start_date, \
+                           due_date, task_complete)
+                
 # =============================================================================
 # ============================= Main Program ==================================
     
-#====Login Section====
+# ============================= Login Section =================================
 
+# Flag to be used for accessing the menu after logging in successfuly
 valid =  False
+# To hold the username of the logged in user
+logged_in_user = ''
 
+# Initially assume the user credentials are invalid 
 while valid == False:
     # Ask the user for username
     username = input("Please enter username: ")
@@ -78,7 +122,10 @@ while valid == False:
     # set valid to True
     if validate_logins(username, password) == True:
         print("Login Successful!!\n")
+        logged_in_user = username
         valid = True
+
+# ========================== Main Program Section =============================
 
 # If Login is successful, display the menu
 while valid:
@@ -92,6 +139,7 @@ while valid:
                     e - exit
                     : ''').lower()
 
+    # Register User
     if menu == 'r':
         # Request input of a new username
         username = input("Please enter username: ")
@@ -108,6 +156,7 @@ while valid:
             with open('user.txt', 'a') as file:
                 file.write('\n' + username + ', ' + password)
 
+    # Add Task
     elif menu == 'a':
         # Ask the username of the person whom the task is assigned to,
         assigned_user = input("Enter username for the user assigned to task: ")
@@ -125,31 +174,22 @@ while valid:
             file.write('\n'+ assigned_user + ', ' + title + ', ' + description\
                        + ', ' + start_date + ', ' + due_date + ', ' + 'No')
 
+    # View All Tasks
     elif menu == 'va':
-        pass
-        '''This code block will read the task from task.txt file and
-         print to the console in the format of Output 2 presented in the PDF
-         You can do it in this way:
-            - Read a line from the file.
-            - Split that line where there is comma and space.
-            - Then print the results in the format shown in the Output 2 in the PDF
-            - It is much easier to read a file using a for loop.'''
-
+        # Process the task file and print the task details
+        process_task_file(menu)
+       
+    # View My Tasks
     elif menu == 'vm':
-        pass
-        '''This code block will read the task from task.txt file and
-         print to the console in the format of Output 2 presented in the PDF
-         You can do it in this way:
-            - Read a line from the file
-            - Split the line where there is comma and space.
-            - Check if the username of the person logged in is the same as the 
-              username you have read from the file.
-            - If they are the same you print the task in the format of Output 2
-              shown in the PDF '''
+        # Process the task file and print the task details for the
+        # logged in user
+        process_task_file(menu)
 
+    # Exit
     elif menu == 'e':
         print('Goodbye!!!')
         exit()
 
+    # Provide appropriate error message if an invalid selection is made
     else:
         print("You have entered an invalid input. Please try again")
