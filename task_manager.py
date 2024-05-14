@@ -127,34 +127,57 @@ while valid == False:
 
 # ========================== Main Program Section =============================
 
-# If Login is successful, display the menu
-while valid:
-    # Present the menu to the user and 
-    # make sure that the user input is converted to lower case.
-    menu = input('''Select one of the following options:
+# Menu options for all users
+menu_items = '''Select one of the following options:
                     r - register a user
                     a - add task
                     va - view all tasks
                     vm - view my tasks
                     e - exit
-                    : ''').lower()
+                    : '''
+
+# Menu options only for admin users
+extra_menu_items = '''Select one of the following options:
+                    r - register a user
+                    a - add task
+                    va - view all tasks
+                    vm - view my tasks
+                    d - display statistics
+                    e - exit
+                    : '''
+
+# If Login is successful, display the menu
+while valid:
+    # Present the menu to the user and 
+    # make sure that the user input is converted to lower case.
+    if (logged_in_user == 'admin'):
+        menu = input(extra_menu_items).lower()
+    else:
+        menu = input(menu_items).lower()
 
     # Register User
     if menu == 'r':
-        # Request input of a new username
-        username = input("Please enter username: ")
-        # Request input of a new password
-        password = input("Please enter password: ")
-        # Request input of password confirmation.
-        confirm_password = input("Please confirm password: ")
 
-        # Check if the new password and confirmed password are the same
-        if (password != confirm_password):
-           print("ERROR!! Passwords do not match.. ") 
-        # Else if they are the same, add them to the user.txt file,
+        # Check if the user is an admin
+        if (logged_in_user == 'admin'):
+            
+            # Request input of a new username
+            username = input("Please enter username: ")
+            # Request input of a new password
+            password = input("Please enter password: ")
+            # Request input of password confirmation.
+            confirm_password = input("Please confirm password: ")
+
+            # Check if the new password and confirmed password are the same
+            if (password != confirm_password):
+                print("ERROR!! Passwords do not match.. ") 
+            # Else if they are the same, add them to the user.txt file,
+            else:
+                with open('user.txt', 'a') as file:
+                    file.write('\n' + username + ', ' + password)
+
         else:
-            with open('user.txt', 'a') as file:
-                file.write('\n' + username + ', ' + password)
+            print("Only admin can register other users!!\n")
 
     # Add Task
     elif menu == 'a':
@@ -184,6 +207,28 @@ while valid:
         # Process the task file and print the task details for the
         # logged in user
         process_task_file(menu)
+
+    # Display Statistics
+    elif menu == 'd' and logged_in_user == 'admin':
+        # tasks counter
+        task_counter = 0
+        # users counter
+        user_counter = 0
+
+        # Read a line from the tasks.txt file and count number of lines
+        with open('tasks.txt', 'r') as file:
+            for line in file:
+                task_counter += 1 
+
+        # Read a line from the user.txt file and count number of lines
+        with open('user.txt', 'r') as file:
+            for line in file:
+                user_counter += 1 
+
+        # Display the results
+        print("\nCurrent Statistics: ")
+        print(f"The number of Tasks is {task_counter}")
+        print(f"The number of Users is {user_counter}\n")
 
     # Exit
     elif menu == 'e':
